@@ -18,11 +18,27 @@ const server = createServer(app);
 // Connect to MongoDB
 connectDB();
 
+// Build allowed origins list from CLIENT_URL env var
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+if (config.clientUrl) {
+  // Support comma-separated CLIENT_URL for multiple frontend domains
+  config.clientUrl.split(',').forEach(url => {
+    const trimmed = url.trim().replace(/\/+$/, ''); // remove trailing slashes
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 // Middleware
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests from any localhost port (Vite may pick different ports)
-    if (!origin || origin.match(/^https?:\/\/localhost(:\d+)?$/)) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some(allowed => origin === allowed)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

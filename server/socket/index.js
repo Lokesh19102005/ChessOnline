@@ -11,10 +11,25 @@ import signalingHandler from './signalingHandler.js';
 const onlineUsers = new Map();
 
 export default function setupSocket(server) {
+  // Build allowed origins for Socket.IO (same as Express CORS)
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+  ];
+  if (config.clientUrl) {
+    config.clientUrl.split(',').forEach(url => {
+      const trimmed = url.trim().replace(/\/+$/, '');
+      if (trimmed && !allowedOrigins.includes(trimmed)) {
+        allowedOrigins.push(trimmed);
+      }
+    });
+  }
+
   const io = new Server(server, {
     cors: {
       origin: function (origin, callback) {
-        if (!origin || origin.match(/^https?:\/\/localhost(:\d+)?$/)) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.some(allowed => origin === allowed)) {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));

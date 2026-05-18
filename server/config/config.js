@@ -1,5 +1,12 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from the repo root (two levels up from config/)
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export default {
   port: process.env.PORT || 5000,
