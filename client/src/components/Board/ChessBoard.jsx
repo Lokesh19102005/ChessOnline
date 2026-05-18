@@ -260,8 +260,8 @@ export default function ChessBoard() {
     if (peerConnectionRef.current) return;
 
     const pc = new RTCPeerConnection({
-      iceServers: iceServersRef.current.length > 0 
-        ? iceServersRef.current 
+      iceServers: iceServersRef.current.length > 0
+        ? iceServersRef.current
         : [{ urls: 'stun:stun.l.google.com:19302' }]
     });
 
@@ -284,9 +284,9 @@ export default function ChessBoard() {
 
     // Get local media
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, 
-        audio: true 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
       });
       setLocalStream(stream);
       stream.getTracks().forEach(track => pc.addTrack(track, stream));
@@ -368,19 +368,19 @@ export default function ChessBoard() {
   // Chess move handler — v5 API passes single object { piece, sourceSquare, targetSquare }
   const onDrop = useCallback(({ piece, sourceSquare, targetSquare }) => {
     console.log('>>> onDrop called:', { sourceSquare, targetSquare, piece: piece?.pieceType, turn, playerColor, gameOver, socketExists: !!socket });
-    
+
     if (!socket) { console.log('BLOCKED: no socket'); return false; }
     if (!targetSquare) return false;
 
-    const isMyTurn = (turn === 'w' && playerColor.startsWith('w')) || 
-                     (turn === 'b' && playerColor.startsWith('b'));
+    const isMyTurn = (turn === 'w' && playerColor.startsWith('w')) ||
+      (turn === 'b' && playerColor.startsWith('b'));
     console.log('isMyTurn:', isMyTurn, 'turn:', turn, 'playerColor:', playerColor);
     if (!isMyTurn || gameOver) { console.log('BLOCKED: not my turn or game over'); return false; }
 
     // Get the piece type string (v5 passes object with pieceType)
     const pieceStr = typeof piece === 'string' ? piece : (piece?.pieceType || '');
-    const isPromotion = (pieceStr === 'P' || pieceStr === 'wP' || pieceStr === 'p' || pieceStr === 'bP') && 
-                        (targetSquare[1] === '8' || targetSquare[1] === '1');
+    const isPromotion = (pieceStr === 'P' || pieceStr === 'wP' || pieceStr === 'p' || pieceStr === 'bP') &&
+      (targetSquare[1] === '8' || targetSquare[1] === '1');
 
     const move = {
       from: sourceSquare,
@@ -389,7 +389,7 @@ export default function ChessBoard() {
     };
 
     console.log('Attempting chess.js move:', move, 'current FEN:', chessRef.current.fen());
-    
+
     // Validate locally
     try {
       const result = chessRef.current.move(move);
@@ -415,7 +415,7 @@ export default function ChessBoard() {
     console.log('socket:', !!socket, 'turn:', turn, 'playerColor:', playerColor, 'gameOver:', gameOver);
     console.log('chessRef FEN:', chessRef.current.fen());
     console.log('chessRef turn:', chessRef.current.turn());
-    
+
     // Try e2-e4
     try {
       const result = chessRef.current.move({ from: 'e2', to: 'e4' });
@@ -539,7 +539,7 @@ export default function ChessBoard() {
         <div style={{ background: '#1a1a2e', color: '#0f0', fontFamily: 'monospace', fontSize: '12px', padding: '6px 10px', borderRadius: '4px', marginBottom: '4px', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <span>Color: <b>{playerColor}</b></span>
           <span>Turn: <b>{turn === 'w' ? 'White' : 'Black'}</b></span>
-          <span>Socket: <b style={{color: socket ? '#0f0' : '#f00'}}>{socket ? 'Connected' : 'NULL'}</b></span>
+          <span>Socket: <b style={{ color: socket ? '#0f0' : '#f00' }}>{socket ? 'Connected' : 'NULL'}</b></span>
           <span>Started: <b>{gameStarted ? 'Yes' : 'No'}</b></span>
           <button onClick={testMove} style={{ background: '#7c3aed', color: '#fff', border: 'none', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' }}>
             Test e2→e4
@@ -566,7 +566,7 @@ export default function ChessBoard() {
 
         {/* Self bar (bottom) */}
         <div className={`${styles.playerBar} ${turn === (playerColor === 'white' ? 'w' : 'b') ? styles.active : ''}`}
-             style={{ marginTop: '8px', marginBottom: 0 }}>
+          style={{ marginTop: '8px', marginBottom: 0 }}>
           <div className="avatar avatar-sm">{getInitials(self.username)}</div>
           <div className={styles.playerDetails}>
             <div className={styles.playerName}>{self.username} (You)</div>
