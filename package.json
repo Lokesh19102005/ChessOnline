@@ -1,0 +1,16 @@
+{
+  "name": "chessmate",
+  "version": "1.0.0",
+  "description": "Chess + Social Platform with Video/Audio calls",
+  "scripts": {
+    "kill-port": "powershell -Command \"try { Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue } } catch {}; exit 0\"",
+    "predev": "npm run kill-port || echo Port clear",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

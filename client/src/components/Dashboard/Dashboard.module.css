@@ -1,0 +1,230 @@
+.dashboard {
+  padding: var(--space-2xl);
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease;
+}
+
+.welcomeSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2xl);
+}
+
+.welcomeText h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: var(--space-xs);
+}
+
+.welcomeText h1 span {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcomeText p {
+  color: var(--text-muted);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+}
+
+.statCard {
+  padding: var(--space-lg);
+  text-align: center;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.statIcon {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-sm);
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.section {
+  padding: var(--space-lg);
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.playButton {
+  width: 100%;
+  padding: 20px;
+  font-size: 1.2rem;
+  margin-bottom: var(--space-md);
+}
+
+.timeControlGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+.timeControlBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.timeControlBtn:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-hover);
+}
+
+.timeControlBtn.selected {
+  border-color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 12px var(--accent-primary-glow);
+}
+
+.timeControlBtn .tcIcon {
+  font-size: 1.3rem;
+}
+
+.timeControlBtn .tcValue {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.timeControlBtn .tcLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.recentGame {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--space-sm);
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+
+.recentGame:hover {
+  background: var(--bg-hover);
+}
+
+.gameResult {
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.gameResult.won {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+.gameResult.lost {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.gameResult.draw {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+}
+
+.gameInfo {
+  flex: 1;
+}
+
+.gameOpponent {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.gameMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.ratingChange {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ratingChange.positive { color: var(--accent-success); }
+.ratingChange.negative { color: var(--accent-danger); }
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+}
+
+.emptyState .emptyIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: var(--space-lg);
+  }
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+  .welcomeSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+}

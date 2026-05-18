@@ -1,0 +1,116 @@
+.authPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  position: relative;
+}
+
+.authPage::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.authContainer {
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+}
+
+.authCard {
+  padding: var(--space-2xl);
+  animation: fadeInUp 0.5s ease;
+}
+
+.authLogo {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.authLogo .logoIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.authLogo h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.authLogo p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: var(--space-xs);
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.authError {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  color: #fca5a5;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  margin-top: var(--space-sm);
+}
+
+.authFooter {
+  text-align: center;
+  margin-top: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.authFooter a {
+  font-weight: 600;
+}
+
+/* Floating chess pieces decoration */
+.floatingPieces {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.06;
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.floatingPieces:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.floatingPieces:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+.floatingPieces:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 2s; }
+.floatingPieces:nth-child(4) { bottom: 25%; right: 10%; animation-delay: 3s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}

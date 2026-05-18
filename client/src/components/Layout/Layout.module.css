@@ -1,0 +1,115 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-xl);
+  height: 64px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.navBrand span {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.navLink:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.navLink.active {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent-primary-hover);
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  padding: 4px 12px 4px 4px;
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+.userInfo:hover {
+  background: var(--bg-hover);
+}
+
+.userName {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.userRating {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.connectionStatus {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: background var(--transition-fast);
+}
+
+.connectionStatus.online {
+  background: var(--accent-success);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.connectionStatus.offline {
+  background: var(--accent-danger);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 var(--space-md);
+  }
+  .navLinks {
+    display: none;
+  }
+}
