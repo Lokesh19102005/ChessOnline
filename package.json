@@ -1,7 +1,7 @@
 {
-  "name": "chessmate",
+  "name": "talkopia",
   "version": "1.0.0",
-  "description": "Chess + Social Platform with Video/Audio calls",
+  "description": "Talkopia - The Social Chess Platform with Video/Audio calls, Chat & Leaderboards",
   "scripts": {
     "kill-port": "powershell -Command \"try { Get-NetTCPConnection -LocalPort 5000 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue } } catch {}; exit 0\"",
     "predev": "npm run kill-port || echo Port clear",
