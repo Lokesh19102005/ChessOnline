@@ -67,6 +67,7 @@
 .boardSection {
   display: flex;
   flex-direction: column;
+  max-width: 560px;
 }
 
 .boardWrapper {
@@ -74,6 +75,7 @@
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   border: 2px solid var(--border-color);
+  line-height: 0;
 }
 
 /* Game Controls */
@@ -443,21 +445,118 @@
 
 @media (max-width: 1024px) {
   .gameContainer {
-    grid-template-columns: 1fr;
-    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+    min-height: auto;
   }
+
+  /* Board comes first on mobile */
+  .boardSection {
+    order: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Left panel (moves) goes below board */
+  .leftPanel {
+    order: 3;
+  }
+
+  .moveHistory {
+    max-height: 150px;
+  }
+
+  /* Sidebar (video + chat) after board */
   .sidebar {
+    order: 2;
     height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--space-sm);
   }
+
   .videoPanel {
-    flex: 1;
-    min-width: 200px;
+    max-height: none;
   }
+
+  .videoContainer {
+    aspect-ratio: auto;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;
+    max-height: 120px;
+  }
+
+  .videoBox {
+    max-height: 120px;
+  }
+
   .chatPanel {
-    flex: 1;
-    min-width: 250px;
-    max-height: 250px;
+    max-height: 200px;
+  }
+
+  .playerBar {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .timer {
+    font-size: 1.1rem;
+    padding: 4px 12px;
+    min-width: 70px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .gameContainer {
+    padding: var(--space-xs);
+    gap: var(--space-xs);
+  }
+
+  .playerBar {
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  .playerName {
+    font-size: 0.85rem;
+  }
+
+  .playerRating {
+    font-size: 0.7rem;
+  }
+
+  .timer {
+    font-size: 1rem;
+    padding: 3px 10px;
+    min-width: 60px;
+  }
+
+  .boardWrapper {
+    border-width: 1px;
+    border-radius: var(--radius-md);
+  }
+
+  .gameControls {
+    margin-top: var(--space-sm);
+  }
+
+  .controlBtn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .moveHistory {
+    max-height: 120px;
+    padding: var(--space-sm);
+  }
+
+  .chatPanel {
+    max-height: 160px;
+  }
+
+  .chatMessages {
+    min-height: 60px;
   }
 }

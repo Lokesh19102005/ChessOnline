@@ -9,7 +9,7 @@
   border-bottom: 1px solid var(--glass-border);
   position: sticky;
   top: 0;
-  z-index: var(--z-dropdown);
+  z-index: 1000;
 }
 
 .navBrand {
@@ -20,6 +20,7 @@
   font-weight: 800;
   color: var(--text-primary);
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .navBrand span {
@@ -72,6 +73,7 @@
   padding: 4px 12px 4px 4px;
   border-radius: var(--radius-full);
   transition: background var(--transition-fast);
+  text-decoration: none;
 }
 
 .userInfo:hover {
@@ -105,11 +107,138 @@
   background: var(--accent-danger);
 }
 
+/* ================================
+   Hamburger — hidden on desktop
+   ================================ */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1100;
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2.5px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.hamburger.hamburgerOpen span:nth-child(1) {
+  transform: translateY(7.5px) rotate(45deg);
+}
+.hamburger.hamburgerOpen span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger.hamburgerOpen span:nth-child(3) {
+  transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* Mobile overlay — darkens background */
+.mobileOverlay {
+  display: none;
+}
+
+/* Mobile slide-out menu */
+.mobileMenu {
+  display: none;
+}
+
+/* ================================
+   MOBILE < 768px
+   ================================ */
 @media (max-width: 768px) {
   .navbar {
-    padding: 0 var(--space-md);
+    padding: 0 12px;
+    height: 56px;
   }
+
+  .navBrand {
+    font-size: 1.1rem;
+  }
+
   .navLinks {
+    display: none !important;
+  }
+
+  .userInfoText {
     display: none;
   }
+
+  .hamburger {
+    display: flex;
+  }
+
+  /* Dark overlay behind menu */
+  .mobileOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1050;
+    animation: fadeIn 0.25s ease;
+  }
+
+  /* Slide-out drawer */
+  .mobileMenu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100dvh;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--glass-border);
+    z-index: 1060;
+    padding: 72px 16px 32px;
+    gap: 4px;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobileMenu.mobileMenuOpen {
+    transform: translateX(0);
+  }
+
+  .mobileLink {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .mobileLink:hover,
+  .mobileLink:active {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .mobileLink.active {
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--accent-primary-hover);
+    font-weight: 600;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

@@ -51,19 +51,6 @@ export default function ChessBoard() {
   // Chess.js instance for local validation
   const chessRef = useRef(new Chess());
 
-  // Board size
-  const [boardWidth, setBoardWidth] = useState(560);
-
-  useEffect(() => {
-    const updateSize = () => {
-      const maxW = Math.min(window.innerWidth - 700, 600);
-      const maxH = window.innerHeight - 200;
-      setBoardWidth(Math.max(300, Math.min(maxW, maxH)));
-    };
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
 
   // Join game and setup listeners
   useEffect(() => {
@@ -554,7 +541,7 @@ export default function ChessBoard() {
               position: fen,
               onPieceDrop: onDrop,
               boardOrientation: playerColor,
-              boardStyle: { borderRadius: '0', width: `${boardWidth}px`, height: `${boardWidth}px` },
+              boardStyle: { borderRadius: '0' },
               darkSquareStyle: { backgroundColor: '#7b6b5a' },
               lightSquareStyle: { backgroundColor: '#e8dcc8' },
               dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(124, 58, 237, 0.5)' },

@@ -6,6 +6,7 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import ChessBoard from './components/Board/ChessBoard';
+import ComputerGame from './components/Board/ComputerGame';
 import GameReview from './components/Board/GameReview';
 import Leaderboard from './components/Pages/Leaderboard';
 import History from './components/Pages/History';
@@ -66,6 +67,11 @@ function AppRoutes() {
       <Route path="/play" element={
         <ProtectedRoute>
           <AppLayout><Dashboard /></AppLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/play-computer" element={
+        <ProtectedRoute>
+          <AppLayout><ComputerGame /></AppLayout>
         </ProtectedRoute>
       } />
       <Route path="/game/:gameId" element={

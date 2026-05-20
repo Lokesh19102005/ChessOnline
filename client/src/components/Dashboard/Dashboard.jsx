@@ -139,6 +139,21 @@ export default function Dashboard() {
               '⚔️ Find Match'
             )}
           </button>
+
+          {/* Play vs Computer */}
+          <div className={styles.computerPlayCard}>
+            <div className={styles.computerPlayIcon}>🤖</div>
+            <div className={styles.computerPlayInfo}>
+              <div className={styles.computerPlayTitle}>Play vs Computer</div>
+              <div className={styles.computerPlayDesc}>Practice against Stockfish AI</div>
+            </div>
+            <button
+              className={`btn btn-secondary ${styles.computerPlayBtn}`}
+              onClick={() => navigate('/play-computer')}
+            >
+              Play →
+            </button>
+          </div>
         </div>
 
         {/* Recent Games */}

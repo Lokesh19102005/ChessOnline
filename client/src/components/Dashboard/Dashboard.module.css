@@ -212,6 +212,49 @@
   opacity: 0.5;
 }
 
+/* Play vs Computer Card */
+.computerPlayCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.06));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.computerPlayCard:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+}
+
+.computerPlayIcon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.computerPlayInfo {
+  flex: 1;
+}
+
+.computerPlayTitle {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.computerPlayDesc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.computerPlayBtn {
+  flex-shrink: 0;
+  padding: 8px 16px !important;
+  font-size: 0.8rem !important;
+}
+
 @media (max-width: 768px) {
   .dashboard {
     padding: var(--space-lg);
