@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
@@ -6,6 +6,97 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { formatTime, getInitials } from '../../utils/constants';
 import styles from './Board.module.css';
+
+// Memoized video panel — isolates video from timer-driven re-renders
+const VideoPanel = memo(function VideoPanel({
+  callActive, remoteStream, localStream, videoEnabled, audioEnabled,
+  opponentName, startCall, toggleVideo, toggleAudio, endCall
+}) {
+  // Use callback refs to guarantee srcObject is set when the element mounts
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+
+  // Callback ref for remote video — sets srcObject reliably on mount
+  const setRemoteVideoRef = useCallback((el) => {
+    remoteVideoRef.current = el;
+    if (el && remoteStream) {
+      el.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
+
+  // Callback ref for local video — sets srcObject reliably on mount
+  const setLocalVideoRef = useCallback((el) => {
+    localVideoRef.current = el;
+    if (el && localStream) {
+      el.srcObject = localStream;
+    }
+  }, [localStream]);
+
+  if (!callActive) {
+    return (
+      <div className={`${styles.videoPanel} glass-card`}>
+        <div style={{ padding: '24px', textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '12px', fontSize: '0.9rem' }}>
+            Connect with your opponent
+          </p>
+          <button className="btn btn-primary btn-sm" onClick={startCall}>
+            📹 Start Video Call
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${styles.videoPanel} glass-card`}>
+      <div className={styles.videoContainer}>
+        <div className={`${styles.videoBox} ${!remoteStream ? styles.videoOff : ''}`}>
+          {remoteStream ? (
+            <video ref={setRemoteVideoRef} autoPlay playsInline />
+          ) : '📹'}
+          <span className={styles.videoLabel}>{opponentName}</span>
+        </div>
+        <div className={`${styles.videoBox} ${!localStream ? styles.videoOff : ''}`}>
+          {localStream ? (
+            <video
+              ref={setLocalVideoRef}
+              autoPlay
+              playsInline
+              muted
+              style={!videoEnabled ? { opacity: 0, position: 'absolute' } : undefined}
+            />
+          ) : null}
+          {!localStream && '🙂'}
+          {localStream && !videoEnabled && <span style={{ fontSize: '2rem' }}>📷</span>}
+          <span className={styles.videoLabel}>You</span>
+        </div>
+      </div>
+      <div className={styles.videoControls}>
+        <button
+          className={`${styles.mediaBtn} ${!videoEnabled ? styles.off : ''}`}
+          onClick={toggleVideo}
+          title={videoEnabled ? 'Turn off camera' : 'Turn on camera'}
+        >
+          {videoEnabled ? '📹' : '🚫'}
+        </button>
+        <button
+          className={`${styles.mediaBtn} ${!audioEnabled ? styles.off : ''}`}
+          onClick={toggleAudio}
+          title={audioEnabled ? 'Mute' : 'Unmute'}
+        >
+          {audioEnabled ? '🎤' : '🔇'}
+        </button>
+        <button
+          className={`${styles.mediaBtn} ${styles.endCall}`}
+          onClick={endCall}
+          title="End call"
+        >
+          📞
+        </button>
+      </div>
+    </div>
+  );
+});
 
 export default function ChessBoard() {
   const { gameId } = useParams();
@@ -40,8 +131,7 @@ export default function ChessBoard() {
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [callActive, setCallActive] = useState(false);
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
+  // Video refs are now inside the memoized VideoPanel component
   const peerConnectionRef = useRef(null);
   const iceServersRef = useRef([]);
 
@@ -230,18 +320,7 @@ export default function ChessBoard() {
     };
   }, [socket, gameId]);
 
-  // Attach streams to video elements
-  useEffect(() => {
-    if (localVideoRef.current && localStream) {
-      localVideoRef.current.srcObject = localStream;
-    }
-  }, [localStream]);
-
-  useEffect(() => {
-    if (remoteVideoRef.current && remoteStream) {
-      remoteVideoRef.current.srcObject = remoteStream;
-    }
-  }, [remoteStream]);
+  // Stream attachment is now handled inside the memoized VideoPanel component
 
   const setupPeerConnection = async () => {
     if (peerConnectionRef.current) return;
@@ -296,7 +375,7 @@ export default function ChessBoard() {
     peerConnectionRef.current = pc;
   };
 
-  const startCall = async () => {
+  const startCall = useCallback(async () => {
     if (!socket) return;
     try {
       await setupPeerConnection();
@@ -308,7 +387,7 @@ export default function ChessBoard() {
     } catch (err) {
       console.error('Error starting call:', err);
     }
-  };
+  }, [socket, gameId]);
 
   const cleanupCall = () => {
     if (localStream) {
@@ -325,7 +404,7 @@ export default function ChessBoard() {
     setAudioEnabled(false);
   };
 
-  const toggleVideo = () => {
+  const toggleVideo = useCallback(() => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
       if (videoTrack) {
@@ -334,9 +413,9 @@ export default function ChessBoard() {
         if (socket) socket.emit('webrtc:toggle-media', { gameId, type: 'video', enabled: videoTrack.enabled });
       }
     }
-  };
+  }, [localStream, socket, gameId]);
 
-  const toggleAudio = () => {
+  const toggleAudio = useCallback(() => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
       if (audioTrack) {
@@ -345,12 +424,12 @@ export default function ChessBoard() {
         if (socket) socket.emit('webrtc:toggle-media', { gameId, type: 'audio', enabled: audioTrack.enabled });
       }
     }
-  };
+  }, [localStream, socket, gameId]);
 
-  const endCall = () => {
+  const endCall = useCallback(() => {
     if (socket) socket.emit('webrtc:end-call', { gameId });
     cleanupCall();
-  };
+  }, [socket, gameId]);
 
   // Chess move handler — v5 API passes single object { piece, sourceSquare, targetSquare }
   const onDrop = useCallback(({ piece, sourceSquare, targetSquare }) => {
@@ -579,80 +658,19 @@ export default function ChessBoard() {
 
       {/* Right Sidebar */}
       <div className={styles.sidebar}>
-        {/* Video Panel */}
-        <div className={`${styles.videoPanel} glass-card`}>
-          {callActive ? (
-            <>
-              <div className={styles.videoContainer}>
-                <div className={`${styles.videoBox} ${!remoteStream ? styles.videoOff : ''}`}>
-                  {remoteStream ? (
-                    <video
-                      ref={(el) => {
-                        remoteVideoRef.current = el;
-                        if (el && remoteStream) {
-                          el.srcObject = remoteStream;
-                        }
-                      }}
-                      autoPlay
-                      playsInline
-                    />
-                  ) : '📹'}
-                  <span className={styles.videoLabel}>{opponent.username}</span>
-                </div>
-                <div className={`${styles.videoBox} ${!videoEnabled ? styles.videoOff : ''}`}>
-                  {localStream ? (
-                    <video
-                      ref={(el) => {
-                        localVideoRef.current = el;
-                        if (el && localStream) {
-                          el.srcObject = localStream;
-                        }
-                      }}
-                      autoPlay
-                      playsInline
-                      muted
-                      style={!videoEnabled ? { display: 'none' } : undefined}
-                    />
-                  ) : null}
-                  {(!localStream || !videoEnabled) && '🙂'}
-                  <span className={styles.videoLabel}>You</span>
-                </div>
-              </div>
-              <div className={styles.videoControls}>
-                <button
-                  className={`${styles.mediaBtn} ${!videoEnabled ? styles.off : ''}`}
-                  onClick={toggleVideo}
-                  title={videoEnabled ? 'Turn off camera' : 'Turn on camera'}
-                >
-                  {videoEnabled ? '📹' : '🚫'}
-                </button>
-                <button
-                  className={`${styles.mediaBtn} ${!audioEnabled ? styles.off : ''}`}
-                  onClick={toggleAudio}
-                  title={audioEnabled ? 'Mute' : 'Unmute'}
-                >
-                  {audioEnabled ? '🎤' : '🔇'}
-                </button>
-                <button
-                  className={`${styles.mediaBtn} ${styles.endCall}`}
-                  onClick={endCall}
-                  title="End call"
-                >
-                  📞
-                </button>
-              </div>
-            </>
-          ) : (
-            <div style={{ padding: '24px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '12px', fontSize: '0.9rem' }}>
-                Connect with your opponent
-              </p>
-              <button className="btn btn-primary btn-sm" onClick={startCall}>
-                📹 Start Video Call
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Video Panel — memoized to prevent timer-driven re-renders */}
+        <VideoPanel
+          callActive={callActive}
+          remoteStream={remoteStream}
+          localStream={localStream}
+          videoEnabled={videoEnabled}
+          audioEnabled={audioEnabled}
+          opponentName={opponent.username}
+          startCall={startCall}
+          toggleVideo={toggleVideo}
+          toggleAudio={toggleAudio}
+          endCall={endCall}
+        />
 
         {/* Chat */}
         <div className={`${styles.chatPanel} glass-card`}>
