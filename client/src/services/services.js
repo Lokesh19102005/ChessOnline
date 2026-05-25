@@ -14,7 +14,10 @@ export const userService = {
   sendFriendRequest: (id) => api.post(`/users/${id}/friend-request`),
   acceptFriendRequest: (id) => api.post(`/users/friend-request/${id}/accept`),
   declineFriendRequest: (id) => api.post(`/users/friend-request/${id}/decline`),
-  removeFriend: (id) => api.delete(`/users/friends/${id}`)
+  removeFriend: (id) => api.delete(`/users/friends/${id}`),
+  getRecommendations: () => api.get('/users/recommendations'),
+  getUserFriends: (id) => api.get(`/users/${id}/friends`),
+  getConversations: () => api.get('/users/conversations')
 };
 
 export const gameService = {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { userService } from '../../services/services';
 import { getRatingTier, getInitials } from '../../utils/constants';
@@ -7,11 +7,14 @@ import styles from './Pages.module.css';
 
 export default function Profile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user: currentUser, updateUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [bio, setBio] = useState('');
+  const [profileFriends, setProfileFriends] = useState([]);
+  const [showAllFriends, setShowAllFriends] = useState(false);
 
   const isOwnProfile = !id || id === currentUser?._id;
   const userId = id || currentUser?._id;
@@ -20,9 +23,13 @@ export default function Profile() {
 
   const loadProfile = async () => {
     try {
-      const res = await userService.getProfile(userId);
-      setProfile(res.data.user);
-      setBio(res.data.user.bio || '');
+      const [profileRes, friendsRes] = await Promise.all([
+        userService.getProfile(userId),
+        userService.getUserFriends(userId)
+      ]);
+      setProfile(profileRes.data.user);
+      setBio(profileRes.data.user.bio || '');
+      setProfileFriends(friendsRes.data.friends || []);
     } catch (error) { console.error(error); }
     finally { setLoading(false); }
   };
@@ -48,6 +55,14 @@ export default function Profile() {
   const tier = getRatingTier(profile.rating);
   const winRate = profile.gamesPlayed > 0 ? Math.round((profile.wins / profile.gamesPlayed) * 100) : 0;
 
+  // Determine if already friends
+  const isFriend = profile.friends?.some(f => {
+    const fId = f._id || f;
+    return fId === currentUser?._id;
+  });
+
+  const displayFriends = showAllFriends ? profileFriends : profileFriends.slice(0, 8);
+
   return (
     <div className={styles.pageContainer}>
       <div className={`${styles.profileHeader} glass-card`}>
@@ -66,7 +81,8 @@ export default function Profile() {
           )}
           <div style={{ display:'flex',gap:8,marginTop:12 }}>
             {isOwnProfile && !editing && <button className="btn btn-secondary btn-sm" onClick={()=>setEditing(true)}>✏️ Edit Bio</button>}
-            {!isOwnProfile && <button className="btn btn-primary btn-sm" onClick={sendFriendReq}>👤 Add Friend</button>}
+            {!isOwnProfile && !isFriend && <button className="btn btn-primary btn-sm" onClick={sendFriendReq}>👤 Add Friend</button>}
+            {!isOwnProfile && isFriend && <span className="badge badge-green" style={{ padding: '6px 14px' }}>✓ Friends</span>}
           </div>
         </div>
       </div>
@@ -85,6 +101,52 @@ export default function Profile() {
             <div className={styles.profileStatLabel}>{s.l}</div>
           </div>
         ))}
+      </div>
+
+      {/* Friends Section */}
+      <div className={styles.profileFriendsSection}>
+        <div className={styles.profileFriendsHeader}>
+          <h3>👥 Friends ({profileFriends.length})</h3>
+          {isOwnProfile && (
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/friends')}>
+              Manage Friends
+            </button>
+          )}
+        </div>
+
+        {profileFriends.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            {isOwnProfile ? 'No friends yet. Visit the Social Hub to find players!' : 'This player hasn\'t added any friends yet.'}
+          </p>
+        ) : (
+          <>
+            <div className={styles.profileFriendsGrid}>
+              {displayFriends.map(f => (
+                <div key={f._id} className={styles.profileFriendCard} onClick={() => navigate(`/profile/${f._id}`)}>
+                  <div className={styles.friendAvatarWrap}>
+                    <div className="avatar avatar-sm">{getInitials(f.username)}</div>
+                    {f.isOnline && <span className={styles.onlineBadge} />}
+                  </div>
+                  <div>
+                    <div className={styles.profileFriendName}>{f.username}</div>
+                    <div className={styles.profileFriendRating}>⭐ {f.rating}</div>
+                    {!isOwnProfile && f.isMutual && (
+                      <span className={styles.mutualBadge}>Mutual</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {profileFriends.length > 8 && (
+              <button
+                className="btn btn-ghost btn-sm"
+                style={{ marginTop: 'var(--space-md)', width: '100%' }}
+                onClick={() => setShowAllFriends(!showAllFriends)}>
+                {showAllFriends ? 'Show Less' : `View All ${profileFriends.length} Friends`}
+              </button>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

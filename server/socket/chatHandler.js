@@ -34,7 +34,7 @@ export default function chatHandler(io, socket) {
         .sort({ createdAt: 1 })
         .limit(100);
 
-      socket.emit('chat:history', { messages });
+      socket.emit('chat:history', { messages, conversationKey: conversationKey || gameId });
     } catch (error) {
       socket.emit('chat:error', { message: error.message });
     }
@@ -57,6 +57,12 @@ export default function chatHandler(io, socket) {
 
       // Emit to the conversation room
       io.to(conversationKey).emit('chat:message', populatedMessage.toObject());
+      
+      // Also emit a notification to the recipient for unread badge updates
+      io.to(`user_${to}`).emit('chat:new-message-notification', {
+        conversationKey,
+        message: populatedMessage.toObject()
+      });
     } catch (error) {
       socket.emit('chat:error', { message: error.message });
     }
@@ -65,5 +71,50 @@ export default function chatHandler(io, socket) {
   // Join a conversation room (for friend chat)
   socket.on('chat:join-conversation', ({ conversationKey }) => {
     socket.join(conversationKey);
+  });
+
+  // Leave a conversation room
+  socket.on('chat:leave-conversation', ({ conversationKey }) => {
+    socket.leave(conversationKey);
+  });
+
+  // Typing indicators
+  socket.on('chat:typing', ({ conversationKey }) => {
+    socket.to(conversationKey).emit('chat:typing', {
+      userId: socket.userId,
+      username: socket.username,
+      conversationKey
+    });
+  });
+
+  socket.on('chat:stop-typing', ({ conversationKey }) => {
+    socket.to(conversationKey).emit('chat:stop-typing', {
+      userId: socket.userId,
+      conversationKey
+    });
+  });
+
+  // Mark messages as read in a conversation
+  socket.on('chat:mark-read', async ({ conversationKey }) => {
+    try {
+      await Message.updateMany(
+        {
+          conversationKey,
+          sender: { $ne: socket.userId },
+          read: false
+        },
+        {
+          $set: { read: true, readAt: new Date() }
+        }
+      );
+
+      // Notify the other user that their messages were read
+      socket.to(conversationKey).emit('chat:messages-read', {
+        conversationKey,
+        readBy: socket.userId
+      });
+    } catch (error) {
+      socket.emit('chat:error', { message: error.message });
+    }
   });
 }

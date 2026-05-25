@@ -73,6 +73,9 @@ export default function setupSocket(server) {
     }
     onlineUsers.get(socket.userId).add(socket.id);
 
+    // Join user-specific room for targeted notifications (e.g. new DM alerts)
+    socket.join(`user_${socket.userId}`);
+
     // Update user online status
     await User.findByIdAndUpdate(socket.userId, { isOnline: true });
     io.emit('user:online', { userId: socket.userId });

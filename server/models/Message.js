@@ -25,6 +25,14 @@ const messageSchema = new mongoose.Schema({
     type: String,
     enum: ['text', 'system'],
     default: 'text'
+  },
+  read: {
+    type: Boolean,
+    default: false
+  },
+  readAt: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true
